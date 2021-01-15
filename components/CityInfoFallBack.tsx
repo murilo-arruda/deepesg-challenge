@@ -11,6 +11,6 @@ function CityInfoFallback({ city }: CityInfoFallbackProps) {
     temp: 'XXX',
     humidity: 'XXX',
   };
-  return <CityDataView cityData={fallbackCityData} />;
+  return <CityDataView handleSave={() => null} cityData={fallbackCityData} />;
 }
 export default CityInfoFallback;
