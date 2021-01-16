@@ -6,11 +6,17 @@ type CityInfoFallbackProps = {
 function CityInfoFallback({ city }: CityInfoFallbackProps) {
   const initialName = useRef(city).current;
   const fallbackCityData = {
-    name: initialName,
-    wind: 'XXX',
-    temp: 'XXX',
-    humidity: 'XXX',
+    name: `Buscando por ${initialName}...`,
+    wind: '--',
+    temp: '--',
+    humidity: '--',
   };
-  return <CityDataView handleSave={() => null} cityData={fallbackCityData} />;
+  return (
+    <CityDataView
+      isFallBack={true}
+      handleSave={() => null}
+      cityData={fallbackCityData}
+    />
+  );
 }
 export default CityInfoFallback;

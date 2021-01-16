@@ -58,16 +58,34 @@ function CityInfo({ city, handleSave }: cityInfoProps) {
 
   switch (status) {
     case 'idle':
-      return <div>Digite uma cidade</div>;
+      return (
+        <div>
+          <p className="text-center text-pink-500">
+            Aguardando busca por cidade
+          </p>
+        </div>
+      );
     case 'pending':
       return <CityInfoFallback city={city} />;
     case 'resolved':
-      return <CityDataView cityData={state} handleSave={handleSave} />;
+      return (
+        <CityDataView
+          isFallBack={false}
+          cityData={state}
+          handleSave={handleSave}
+        />
+      );
     case 'rejected':
       throw 'error rejected!';
 
     default:
-      return <div>Digite uma cidade</div>;
+      return (
+        <div>
+          <p className="text-center text-pink-500">
+            Aguardando busca por cidade
+          </p>
+        </div>
+      );
   }
 }
 export default CityInfo;

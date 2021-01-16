@@ -53,22 +53,25 @@ function Home() {
   function handleSubmit(data: string) {
     setCity(data);
   }
+  //TODO:
+  // ADD favicon
   return (
-    <div>
+    <div className="container mx-auto flex-col max-w-sm mt-5">
       <Head>
         <title>Weather App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h2>Weather Check</h2>
+
       <CityForm onSubmit={handleSubmit} />
-      <hr />
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => setCity('')}
-        resetKeys={[city]}
-      >
-        <CityInfo city={city} handleSave={handleSave} />
-      </ErrorBoundary>
+      <div className="bg-gray-50 p-4 shadow mt-3">
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => setCity('')}
+          resetKeys={[city]}
+        >
+          <CityInfo city={city} handleSave={handleSave} />
+        </ErrorBoundary>
+      </div>
       <SavedHistory history={history} removeCity={handleRemove} />
     </div>
   );
