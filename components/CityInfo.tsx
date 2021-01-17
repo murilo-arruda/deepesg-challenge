@@ -21,7 +21,6 @@ async function fetchCity(name: string) {
   });
   const data = await response.json();
   if (response.ok) {
-    console.log(data);
     if (data) {
       //city.fetchedAt = formatDate(new Date())
       return data;

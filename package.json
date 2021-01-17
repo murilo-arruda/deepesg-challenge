@@ -10,6 +10,7 @@
   "dependencies": {
     "@types/react-transition-group": "^4.4.0",
     "autoprefixer": "^10.2.1",
+    "fuse.js": "^6.4.6",
     "next": "10.0.5",
     "postcss": "^8.2.4",
     "react": "17.0.1",
