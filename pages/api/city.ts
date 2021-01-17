@@ -4,7 +4,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { name } = JSON.parse(req.body);
 
-    const key = '467fedca'; // SET ENV VAR
+    const key = '81ead2af'; // SET ENV VAR
     // Fetch from the HG API City
     const url = `https://api.hgbrasil.com/weather?key=${key}&city_name=${name}`;
     fetch(encodeURI(url))
