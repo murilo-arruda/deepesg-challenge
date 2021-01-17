@@ -11,6 +11,7 @@ type city = {
   humidity: string;
   temp: string;
   name: string;
+  fetchedAt: string;
 };
 
 interface FallbackProps {
@@ -30,6 +31,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 
 function Home() {
   const [city, setCity] = useState('');
+  const [status, setStatus] = useState('idle');
   const [history, setHistory] = useLocalStorage('cidade');
 
   function handleSave(cityData: city) {
@@ -51,9 +53,9 @@ function Home() {
     setHistory(newHistory);
   }
   function handleSubmit(data: string) {
+    setStatus('peding');
     setCity(data);
   }
-  //TODO:
   // ADD favicon
   return (
     <div className="container mx-auto flex-col max-w-sm mt-5">
@@ -62,7 +64,7 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <CityForm onSubmit={handleSubmit} />
+      <CityForm status={status} onSubmit={handleSubmit} />
       <div className="bg-gray-50 p-4 shadow mt-3">
         <ErrorBoundary
           FallbackComponent={ErrorFallback}

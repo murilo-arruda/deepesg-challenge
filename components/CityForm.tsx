@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Fuse from 'fuse.js';
 
-type CityFormProps = {
-  initialCity?: string;
-  onSubmit: Function;
-};
 const states: { [index: number]: { name: string; alias: string } } = {
   11: { name: 'Rondônia', alias: 'RO' },
   12: { name: 'Acre', alias: 'AC' },
@@ -35,6 +31,12 @@ const states: { [index: number]: { name: string; alias: string } } = {
   53: { name: 'Distrito Federal', alias: 'DF' },
 };
 
+type CityFormProps = {
+  initialCity?: string;
+  onSubmit: Function;
+  status: string;
+};
+
 interface fuzzyOptions {
   item: { state_id: number; id: number; name: string };
   refIndex: number;
@@ -49,50 +51,77 @@ async function fetchCitysList() {
     return Promise.reject(new Error(`Falha ao buscar lista de cidades`));
   }
 }
+interface state {
+  city: string;
+  fuzzyList: Fuse.FuseResult<cities>[];
+  fuse?: Fuse<cities>;
+  focus: boolean;
+  preventHidden: boolean;
+}
 
-function CityForm({ initialCity = '', onSubmit }: CityFormProps) {
-  const [city, setCity] = useState(initialCity);
-  const [fuzzyOptions, setFuzzyOptions] = useState<fuzzyOptions[]>([]);
-  const [fuse, setFuse] = useState<any>(null);
-  const [focus, setFocus] = useState(false);
+interface cities {
+  state_id: number;
+  id: number;
+  name: string;
+}
+function CityForm({ initialCity = '', onSubmit, status }: CityFormProps) {
+  const [state, setState] = useState<state>({
+    city: initialCity,
+    fuzzyList: [],
+    focus: false,
+    preventHidden: true,
+  });
 
   useEffect(() => {
     fetchCitysList()
       .then(data => {
-        console.log(data.cities);
-        setFuse(
-          new Fuse(data.cities, {
-            keys: ['name'],
-            includeScore: true,
-          })
-        );
+        const list: cities[] = data.cities;
+        const options: Fuse.IFuseOptions<cities> = {
+          keys: ['name'],
+          includeScore: true,
+          threshold: 0.5,
+        };
+
+        setState({
+          ...state,
+          fuse: new Fuse(list, options),
+        });
       })
       .catch((error: Error) => console.log(error));
   }, []);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(fuse);
-    if (fuzzyOptions && fuzzyOptions.length > 0) {
-      const { name, state_id } = fuzzyOptions[0].item;
-      setCity(name);
-      setFocus(false);
-      onSubmit(`${name},${states[state_id].alias}`);
+    if (state.fuzzyList && state.fuzzyList.length > 0) {
+      const { name, state_id } = state.fuzzyList[0].item;
+      const city = `${name},${states[state_id].alias}`;
+      setState({ ...state, focus: false, city: '', fuzzyList: [] });
+      onSubmit(city);
     }
   }
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
-    // Fuzzy search on city list
-    setFocus(true);
     const { value } = e.currentTarget;
+
     if (value.length > 1) {
-      const result = fuse.search(value, { limit: 5 });
-      setFuzzyOptions(result);
+      if (value.length > 20) {
+        setState({ ...state, focus: true, city: value });
+      } else {
+        const result = state.fuse?.search(value, { limit: 5 });
+
+        if (result !== undefined) {
+          setState({ ...state, fuzzyList: result, focus: true, city: value });
+        }
+      }
     } else {
-      setFuzzyOptions([]);
+      setState({ ...state, city: value, fuzzyList: [] });
     }
-    setCity(value);
   }
+  function handleSubmitSelect(city: string) {
+    setState({ ...state, focus: false, city: '', fuzzyList: [] });
+    onSubmit(city);
+  }
+
   return (
     <div className="bg-gray-50 p-4 shadow">
       <form onSubmit={handleSubmit} className="flex justify-between ">
@@ -101,26 +130,36 @@ function CityForm({ initialCity = '', onSubmit }: CityFormProps) {
         </label>
         <div className="relative self-stretch w-full pr-2">
           <input
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
+            onFocus={() => setState({ ...state, focus: true })}
+            onBlur={() => setState({ ...state, focus: false })}
             className="h-full w-full px-1 bg-gray-50 placeholder-gray-700 focus:ring-2"
             id="city-input"
             name="city"
             placeholder="Digite o nome da cidade..."
-            value={city}
+            value={state.city}
             onChange={handleChange}
           />
           <div
             className={`flex flex-col absolute inset-x-0 -bottom-30 bg-gray-50 shadow divide-y cursor-pointer ${
-              focus ? '' : 'opacity-0'
+              state.focus || state.preventHidden ? '' : 'opacity-0 hidden'
             }`}
           >
-            {fuzzyOptions.length > 0 &&
-              fuzzyOptions.map(data => (
+            {state.fuzzyList.length > 0 &&
+              state.fuzzyList.map(data => (
                 <div
+                  onMouseEnter={() =>
+                    setState({ ...state, preventHidden: true })
+                  }
+                  onMouseOut={() =>
+                    setState({ ...state, preventHidden: false })
+                  }
                   key={data.refIndex}
                   className="p-1"
-                  onClick={() => setCity(data.item.name)}
+                  onClick={() =>
+                    handleSubmitSelect(
+                      `${data.item.name},${states[data.item.state_id].alias}`
+                    )
+                  }
                 >
                   {data.item.name}, {states[data.item.state_id].alias}
                 </div>
@@ -130,7 +169,7 @@ function CityForm({ initialCity = '', onSubmit }: CityFormProps) {
         <button
           className="px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none"
           type="submit"
-          disabled={!city.length}
+          disabled={!state.city.length}
         >
           <img
             className="w-7 h-7 m-auto inline-block"

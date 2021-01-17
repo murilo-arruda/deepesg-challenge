@@ -5,6 +5,7 @@ type cityProps = {
   humidity: string;
   temp: string;
   name: string;
+  fetchedAt: string;
 };
 type CityDataViewProps = {
   cityData: cityProps;
@@ -25,6 +26,7 @@ function CityDataView({ cityData, handleSave, isFallBack }: CityDataViewProps) {
         />
         {cityData.name}
       </h3>
+      <p className="text-xs text-gray-500">{cityData.fetchedAt}</p>
       <div className="flex flex-col">
         <p className="mb-2">
           <span className="text-sm uppercase text-gray-500 leading-tight">

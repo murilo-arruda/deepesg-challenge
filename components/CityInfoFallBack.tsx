@@ -10,6 +10,7 @@ function CityInfoFallback({ city }: CityInfoFallbackProps) {
     wind: '--',
     temp: '--',
     humidity: '--',
+    fetchedAt: '--',
   };
   return (
     <CityDataView

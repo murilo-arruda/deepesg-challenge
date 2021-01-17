@@ -5,6 +5,7 @@ interface cityProps {
   humidity: string;
   temp: string;
   name: string;
+  fetchedAt?: string;
 }
 type SavedHistoryProps = {
   history: cityProps[];

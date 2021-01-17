@@ -7,12 +7,16 @@ type cityProps = {
   humidity: string;
   temp: string;
   name: string;
+  fetchedAt: string;
 };
 type status = 'idle' | 'pending' | 'resolved' | 'rejected';
 type cityInfoProps = {
   city: string;
   handleSave: (arg0: cityProps) => void;
 };
+
+const formatDate = (date: Date) =>
+  `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
 
 async function fetchCity(name: string) {
   const response = await fetch('/api/city', {
@@ -21,25 +25,22 @@ async function fetchCity(name: string) {
   });
   const data = await response.json();
   if (response.ok) {
-    if (data) {
-      //city.fetchedAt = formatDate(new Date())
-      return data;
-    } else {
-      return Promise.reject(new Error(`No City with the name "${name}"`));
-    }
+    const fetchedAt = formatDate(new Date());
+    return { ...data, fetchedAt };
   } else {
-    console.log('uncaught error');
-    return Promise.reject(new Error('Erro ao buscar cidade'));
+    return Promise.reject(new Error(data.message));
   }
 }
 
 function CityInfo({ city, handleSave }: cityInfoProps) {
   const [status, setStatus] = useState<status>('idle');
+  const [error, setError] = useState('');
   const [state, setState] = useState<cityProps>({
     name: '',
     wind: '',
     temp: '',
     humidity: '',
+    fetchedAt: '',
   });
   useEffect(() => {
     if (city) {
@@ -50,6 +51,7 @@ function CityInfo({ city, handleSave }: cityInfoProps) {
           setStatus('resolved');
         })
         .catch(error => {
+          setError(error.message);
           setStatus('rejected');
         });
     }
@@ -60,7 +62,7 @@ function CityInfo({ city, handleSave }: cityInfoProps) {
       return (
         <div>
           <p className="text-center text-pink-500">
-            Aguardando busca por cidade
+            digite uma cidade para ver as condições climáticas.
           </p>
         </div>
       );
@@ -75,13 +77,13 @@ function CityInfo({ city, handleSave }: cityInfoProps) {
         />
       );
     case 'rejected':
-      throw 'error rejected!';
+      return <div className="text-center text-red-500">{error}</div>;
 
     default:
       return (
         <div>
           <p className="text-center text-pink-500">
-            Aguardando busca por cidade
+            digite uma cidade para ver as condições climáticas.
           </p>
         </div>
       );
