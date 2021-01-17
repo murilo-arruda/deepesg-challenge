@@ -13,7 +13,16 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
             message: 'API da HGBrasil atingiu o limite de requisições diárias.',
           });
         } else {
-          const { results } = await data.json();
+          const { results, valid_key } = await data.json();
+
+          console.log(valid_key);
+          if (valid_key === false) {
+            res.statusCode = 403;
+            res.json({
+              message: 'Chave da API Inválida!',
+            });
+            return;
+          }
           const { humidity, wind_speedy, temp, city_name } = results;
 
           res.statusCode = 200;
