@@ -2,7 +2,7 @@
 
 This repository contains my solution for the [DeepESG Challenge](https://github.com/deepesg/desafio-frontend)
 
-Live version avaible at: https://deepesg-challenge.vercel.app/
+Live version available at: https://deepesg-challenge.vercel.app/
 
 # About the Project
 
