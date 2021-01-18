@@ -89,7 +89,7 @@ function Compare() {
             <thead>
               <tr>
                 <th className="w-1/4" onClick={() => handleSort('cidade')}>
-                  <div className="flex items-center justify-center">
+                  <div className="cursor-pointer flex items-center justify-center">
                     <img className="w-10 h-10" src="/city.svg" alt="Cidade" />
                     <div className="w-7 h-7">
                       {sort.column === 'cidade' && sortArrow(sort.isDecreasing)}
@@ -100,7 +100,7 @@ function Compare() {
                   className="w-2/12"
                   onClick={() => handleSort('temperatura')}
                 >
-                  <div className="flex items-center justify-center">
+                  <div className="cursor-pointer flex items-center justify-center">
                     <img
                       className="w-10 h-10"
                       src="/temperature.svg"
@@ -113,7 +113,7 @@ function Compare() {
                   </div>
                 </th>
                 <th className="w-2/12" onClick={() => handleSort('umidade')}>
-                  <div className="flex items-center justify-center">
+                  <div className="cursor-pointer flex items-center justify-center">
                     <img className="w-10 h-10" src="/drop.svg" alt="Umidade" />
                     <div className="w-7 h-7">
                       {sort.column === 'umidade' &&
@@ -122,7 +122,7 @@ function Compare() {
                   </div>
                 </th>
                 <th className="w-3/12" onClick={() => handleSort('vento')}>
-                  <div className="flex items-center justify-center">
+                  <div className="cursor-pointer flex items-center justify-center">
                     <img
                       className="w-10 h-10"
                       src="/windy.svg"
